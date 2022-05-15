@@ -1,3 +1,6 @@
+import re
+
+
 class Bloque:
     # Un bloque es un conjunto de instrucciones ejecutadas
     # unas detrás de otras.
@@ -38,26 +41,40 @@ class Mostrar:
     def __init__(self, mensaje):
         self.mensaje = mensaje
 
+
 def main():
     with open("programa.txt", "r") as f:
         dict_objt = {}
-        for linea in f.readlines():
-            linea = f.readline()
-            linea.replace(" ", "")
-            if "Mostrar" in linea:
-                valores = linea.split("=")
-                parametro = valores[1]
+        for linea in f.read().splitlines():
+            obj_par = re.findall(r'(\w+)\s*=?\s*"?(.*)"?', linea)
+            dict_objt[obj_par[0][0]] = obj_par[0][1]
+            if "Mostrar" in obj_par[0][1]:
+                linea_par = re.findall(r'\s*Mostrar\(\'(.+)\'\)', obj_par[0][1])
+                dict_objt[obj_par[0][0]] = "print(" + linea_par[0] + ")"
 
-            elif "MientrasQue" in linea:
-                a = linea.split("=")[0]
+            elif "MientrasQue" in obj_par[0][1]:
+                print()
+                #obj_par = re.findall(r'(\w+)\s*=\s*Mostrar\(\'(.+)\'\)', linea)
+                #dict_objt[obj_par[0][0]] = "print(" + obj_par[0][1] + ")"
 
-            elif "Si" in linea:
-                a = linea.split("=")[0]
+            elif "Si" in obj_par[0][1]:
+                linea_par = re.findall(r'\s*Si\(\s*(.+)\s*,\s*(.+)\s*,\s*(.+)\s*\)', linea)
+                objetos = []
+                for objeto in linea_par[0]:
+                    objeto = re.match(r'"(.+)"', objeto).group(1) if "\"" in objeto else dict_objt[objeto].strip("\"")
+                    objetos.append(objeto)
 
-            elif "Bloque" in linea:
-                a = linea.split("=")[0]
+                dict_objt[obj_par[0][0]] = "if " + objetos[0] + ": \n\t" + objetos[1] + "\nelse: \n\t" + objetos[2]
 
-            else:
+            elif "Bloque" in obj_par[0][1]:
+                dict_objt[obj_par[0][0]] = ""
+
+            elif "agregarInstruction(" in obj_par[0][1]:
+                linea_par = re.findall(r'\(\s*(.+)\s*\)', linea)
+                linea_par[0] = re.match(r'"(.+)"', linea_par[0]).group(1) if "\"" in linea_par[0] else dict_objt[linea_par[0]].strip("\"")
+
+
+        print(dict_objt)
 
 
 
