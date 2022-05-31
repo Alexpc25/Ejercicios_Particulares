@@ -10,7 +10,6 @@ class Superheroe_Type():
 
         superheroe = x.upper()
         e = None
-
         for tp in clase:
             if superheroe == tp.name:
                 e = tp
@@ -93,6 +92,7 @@ class Superheroes(SerVivo):
             raise TypeError("Invalid type for attribute tipo")
         self.__coste = (esc.get_monedas()/esc.get_miembros_ekip())*(sum(self.__parrilla_poderes)/30)
         self._energia = (esc.get_energia_vital()*self.__parrilla_poderes[3])
+
         Superheroes.numero_superheroes += 1
 
         #Identificar al siguiente superheroe en su posicion en la lista
